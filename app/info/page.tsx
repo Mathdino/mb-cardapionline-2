@@ -66,7 +66,7 @@ export default async function InfoPage() {
               </div>
             )}
             {company.allowsPickup && (
-              <div className="flex flex-col items-center gap-1">
+              <div className="flex flex-col items-center gap-1 mb-4">
                 <div className="p-2 bg-brand/50 rounded-lg">
                   <Store className="h-10 w-10 text-primary" />
                 </div>
