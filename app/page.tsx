@@ -5,6 +5,8 @@ import RestaurantPage from "./[slug]/restaurant-page";
 import prisma from "@/lib/prisma";
 import { SiteFooter } from "@/components/client/site-footer";
 
+export const dynamic = "force-dynamic";
+
 export default async function HomePage() {
   // Fetch only the first company instead of all companies
   const company = await prisma.company.findFirst({
