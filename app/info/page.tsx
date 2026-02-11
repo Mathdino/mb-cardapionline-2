@@ -44,7 +44,7 @@ export default async function InfoPage() {
         </Link>
       </div>
 
-      <div className="p-4 space-y-8">
+      <div className="p-4 space-y-4">
         {/* Description */}
         <section>
           <h2 className="text-xl font-bold mb-2">{company.name}</h2>
@@ -52,7 +52,7 @@ export default async function InfoPage() {
         </section>
 
         {/* Logistics Methods */}
-        <div className="mt-4 pt-4 border-t border-secondary-foreground/10">
+        <div className="mt-4 mb-2 pt-4 border-t border-secondary-foreground/10">
           <p className="text-xs font-bold text-muted-foreground uppercase tracking-wider mb-3">
             Disponível para
           </p>
@@ -149,7 +149,7 @@ export default async function InfoPage() {
         <section className="space-y-4">
           <div className="flex items-center gap-2 text-primary font-medium">
             <CircleDollarSign className="h-5 w-5" />
-            <h3>Mínimo</h3>
+            <h3 className="mb-0">Mínimo</h3>
           </div>
           <div className="bg-secondary/20 p-4 rounded-xl">
             <p className="text-sm text-muted-foreground">

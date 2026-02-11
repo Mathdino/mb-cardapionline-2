@@ -31,7 +31,7 @@ export function SiteFooter() {
         </div>
 
         {/* Lado Direito: Redes Sociais */}
-        <div className="flex items-center gap-4">
+        <div className="flex items-center gap-2">
           <a
             href="https://instagram.com/seuresutaurante" // PREENCHA O LINK DO INSTAGRAM AQUI
             target="_blank"

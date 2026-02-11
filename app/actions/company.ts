@@ -12,6 +12,7 @@ export async function getCompanies() {
         id: true,
         name: true,
         slug: true,
+        description: true,
         profileImage: true,
         bannerImage: true,
         address: true,
@@ -41,12 +42,13 @@ export async function getCompanyBySlug(slug: string) {
         bannerImage: true,
         address: true,
         phone: true,
-        instagramUrl: true,
-        facebookUrl: true,
+        whatsapp: true,
+        minimumOrder: true,
+        businessHours: true,
+        paymentMethods: true,
         isOpen: true,
         allowsDelivery: true,
         allowsPickup: true,
-        workingHours: true,
       },
     });
     return company;
@@ -69,12 +71,13 @@ export async function getCompanyById(id: string) {
         bannerImage: true,
         address: true,
         phone: true,
-        instagramUrl: true,
-        facebookUrl: true,
+        whatsapp: true,
+        minimumOrder: true,
+        businessHours: true,
+        paymentMethods: true,
         isOpen: true,
         allowsDelivery: true,
         allowsPickup: true,
-        workingHours: true,
       },
     });
     return company;
@@ -102,10 +105,6 @@ export async function updateCompany(companyId: string, data: any) {
     if (data.whatsapp) cleanData.whatsapp = data.whatsapp;
     if (data.minimumOrder !== undefined)
       cleanData.minimumOrder = Number(data.minimumOrder);
-    if (data.averagePreparationTime !== undefined)
-      cleanData.averagePreparationTime = Number(data.averagePreparationTime);
-    if (data.instagram) cleanData.instagram = data.instagram;
-    if (data.facebook) cleanData.facebook = data.facebook;
     if (data.profileImage) cleanData.profileImage = data.profileImage;
     if (data.bannerImage) cleanData.bannerImage = data.bannerImage;
     if (data.phone) cleanData.phone = data.phone;
