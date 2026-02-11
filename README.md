@@ -1,4 +1,4 @@
-# MB Cardápio Online 🍔
+# MB Cardápio Online 🍰
 
 ![Next.js](https://img.shields.io/badge/Next.js-16.0-black?style=for-the-badge&logo=next.js)
 ![TypeScript](https://img.shields.io/badge/TypeScript-5.0-blue?style=for-the-badge&logo=typescript)
