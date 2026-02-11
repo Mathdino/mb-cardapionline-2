@@ -2,11 +2,14 @@ import { getCompanies } from "@/app/actions/company";
 import { getCategories } from "@/app/actions/categories";
 import { getStoreProducts } from "@/app/actions/products";
 import RestaurantPage from "./[slug]/restaurant-page";
+import prisma from "@/lib/prisma";
 import { SiteFooter } from "@/components/client/site-footer";
 
 export default async function HomePage() {
-  const companies = await getCompanies();
-  const company = companies[0];
+  // Fetch only the first company instead of all companies
+  const company = await prisma.company.findFirst({
+    orderBy: { name: "asc" },
+  });
 
   if (!company) {
     return (

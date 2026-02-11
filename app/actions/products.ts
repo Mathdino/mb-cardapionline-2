@@ -21,15 +21,43 @@ export async function getProducts(companyId: string) {
 export async function getStoreProducts(companyId: string) {
   try {
     const now = new Date();
+    // Optimized query to only fetch needed fields and relations
     const products = await prisma.product.findMany({
-      where: { companyId },
-      include: {
-        category: true,
+      where: { 
+        companyId,
+        isAvailable: true // Only show available products in the store
+      },
+      select: {
+        id: true,
+        name: true,
+        description: true,
+        price: true,
+        image: true,
+        categoryId: true,
+        productType: true,
+        isPromotion: true,
+        promotionalPrice: true,
+        isAvailable: true,
+        flavors: true,
+        comboConfig: true,
+        complements: true,
+        ingredients: true,
+        preparationTime: true,
+        preparationTimeUnit: true,
+        category: {
+          select: {
+            id: true,
+            name: true,
+          }
+        },
         promotions: {
           where: {
             isActive: true,
             startDate: { lte: now },
             endDate: { gte: now },
+          },
+          select: {
+            promotionalPrice: true,
           },
           orderBy: { createdAt: "desc" },
           take: 1,
@@ -39,8 +67,6 @@ export async function getStoreProducts(companyId: string) {
     });
 
     return products.map((item) => {
-      // Extract promotions to avoid returning it if not in type,
-      // but we need to access it first.
       const { promotions, ...product } = item;
       const activePromotion = promotions && promotions[0];
 

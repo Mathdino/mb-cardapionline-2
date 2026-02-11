@@ -8,6 +8,18 @@ export async function getCompanies() {
   try {
     const companies = await prisma.company.findMany({
       orderBy: { name: "asc" },
+      select: {
+        id: true,
+        name: true,
+        slug: true,
+        profileImage: true,
+        bannerImage: true,
+        address: true,
+        phone: true,
+        isOpen: true,
+        allowsDelivery: true,
+        allowsPickup: true,
+      },
     });
     return companies;
   } catch (error) {
@@ -20,6 +32,22 @@ export async function getCompanyBySlug(slug: string) {
   try {
     const company = await prisma.company.findUnique({
       where: { slug },
+      select: {
+        id: true,
+        name: true,
+        slug: true,
+        description: true,
+        profileImage: true,
+        bannerImage: true,
+        address: true,
+        phone: true,
+        instagramUrl: true,
+        facebookUrl: true,
+        isOpen: true,
+        allowsDelivery: true,
+        allowsPickup: true,
+        workingHours: true,
+      },
     });
     return company;
   } catch (error) {
@@ -32,6 +60,22 @@ export async function getCompanyById(id: string) {
   try {
     const company = await prisma.company.findUnique({
       where: { id },
+      select: {
+        id: true,
+        name: true,
+        slug: true,
+        description: true,
+        profileImage: true,
+        bannerImage: true,
+        address: true,
+        phone: true,
+        instagramUrl: true,
+        facebookUrl: true,
+        isOpen: true,
+        allowsDelivery: true,
+        allowsPickup: true,
+        workingHours: true,
+      },
     });
     return company;
   } catch (error) {
@@ -44,7 +88,7 @@ export async function updateCompany(companyId: string, data: any) {
   try {
     console.log("=== UPDATE COMPANY START ===");
     console.log("ID received:", companyId);
-    
+
     // Busca direta para simplificar
     const company = await prisma.company.findFirst();
     if (!company) {
@@ -56,8 +100,10 @@ export async function updateCompany(companyId: string, data: any) {
     if (data.name) cleanData.name = data.name;
     if (data.description) cleanData.description = data.description;
     if (data.whatsapp) cleanData.whatsapp = data.whatsapp;
-    if (data.minimumOrder !== undefined) cleanData.minimumOrder = Number(data.minimumOrder);
-    if (data.averagePreparationTime !== undefined) cleanData.averagePreparationTime = Number(data.averagePreparationTime);
+    if (data.minimumOrder !== undefined)
+      cleanData.minimumOrder = Number(data.minimumOrder);
+    if (data.averagePreparationTime !== undefined)
+      cleanData.averagePreparationTime = Number(data.averagePreparationTime);
     if (data.instagram) cleanData.instagram = data.instagram;
     if (data.facebook) cleanData.facebook = data.facebook;
     if (data.profileImage) cleanData.profileImage = data.profileImage;
@@ -72,27 +118,27 @@ export async function updateCompany(companyId: string, data: any) {
 
     const updated = await prisma.company.update({
       where: { id: company.id },
-      data: cleanData
+      data: cleanData,
     });
 
     console.log("Update success!");
     revalidatePath("/empresa/dashboard/informacoes");
-    
+
     // Retornar um objeto plano e simples para evitar problemas de serialização do Next.js
-    return { 
-      success: true, 
+    return {
+      success: true,
       company: {
         id: updated.id,
         name: updated.name,
-        slug: updated.slug
-      } 
+        slug: updated.slug,
+      },
     };
   } catch (error: any) {
     console.error("=== UPDATE COMPANY ERROR ===");
     console.error(error);
-    return { 
-      success: false, 
-      error: error.message || "Erro interno ao atualizar" 
+    return {
+      success: false,
+      error: error.message || "Erro interno ao atualizar",
     };
   }
 }
