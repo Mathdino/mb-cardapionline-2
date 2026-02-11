@@ -23,8 +23,6 @@ export async function POST(request: Request) {
     if (data.minimumOrder !== undefined) cleanData.minimumOrder = Number(data.minimumOrder);
     if (data.allowsDelivery !== undefined) cleanData.allowsDelivery = Boolean(data.allowsDelivery);
     if (data.allowsPickup !== undefined) cleanData.allowsPickup = Boolean(data.allowsPickup);
-    if (data.instagram !== undefined) cleanData.instagram = data.instagram;
-    if (data.facebook !== undefined) cleanData.facebook = data.facebook;
     if (data.profileImage) cleanData.profileImage = data.profileImage;
     if (data.bannerImage) cleanData.bannerImage = data.bannerImage;
     if (data.phone) cleanData.phone = data.phone;

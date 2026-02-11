@@ -23,8 +23,6 @@ model Company {
   isOpen                 Boolean     @default(true)
   createdAt              DateTime    @default(now())
   updatedAt              DateTime    @updatedAt
-  facebook               String?
-  instagram              String?
   allowsDelivery         Boolean     @default(true)
   allowsPickup           Boolean     @default(true)
   categories             Category[]

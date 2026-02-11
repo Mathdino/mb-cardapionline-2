@@ -183,7 +183,7 @@ export function ScrollHeader({
 
                       {company && (
                         <Link
-                          href={`/${company.slug}/info`}
+                          href="/info"
                           className="flex items-center gap-3 px-4 py-3 hover:bg-secondary rounded-lg transition-colors"
                         >
                           <Info className="h-5 w-5 text-muted-foreground" />

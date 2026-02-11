@@ -15,8 +15,6 @@ export interface Company {
   isOpen: boolean;
   allowsDelivery: boolean;
   allowsPickup: boolean;
-  instagram?: string;
-  facebook?: string;
   createdAt: Date;
   updatedAt: Date;
 }

@@ -101,7 +101,7 @@ export function RestaurantHeader({ company }: RestaurantHeaderProps) {
 
           {/* View Details Link */}
           <Link
-            href={`/${company.slug}/info`}
+            href="/info"
             className="flex items-center gap-1 mt-3 text-sm text-primary font-medium hover:underline"
           >
             Ver mais

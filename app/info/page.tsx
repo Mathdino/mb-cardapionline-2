@@ -1,7 +1,5 @@
 import { notFound } from "next/navigation";
-import Link from "next/link";
 import {
-  ArrowLeft,
   MapPin,
   Phone,
   Clock,
@@ -9,18 +7,19 @@ import {
   Truck,
   Store,
   CircleDollarSign,
+  ArrowLeft,
 } from "lucide-react";
-import { getCompanyBySlug } from "@/app/actions/company";
-import { formatCurrency, formatPhone, paymentMethodLabels } from "@/lib/utils";
 import { ScrollHeader } from "@/components/client/scroll-header";
+import Link from "next/link";
+import prisma from "@/lib/prisma";
+import { formatCurrency, formatPhone, paymentMethodLabels } from "@/lib/utils";
 
-interface PageProps {
-  params: Promise<{ slug: string }>;
-}
+export const dynamic = "force-dynamic";
 
-export default async function InfoPage({ params }: PageProps) {
-  const { slug } = await params;
-  const company = await getCompanyBySlug(slug);
+export default async function InfoPage() {
+  const company = await prisma.company.findFirst({
+    orderBy: { name: "asc" },
+  });
 
   if (!company) {
     notFound();
@@ -33,7 +32,17 @@ export default async function InfoPage({ params }: PageProps) {
 
   return (
     <div className="min-h-screen bg-background max-w-lg mx-auto pb-8 pt-20">
-      <ScrollHeader company={company} alwaysVisible />
+      <ScrollHeader company={company as any} alwaysVisible />
+
+      <div className="px-4 mb-4">
+        <Link
+          href="/"
+          className="inline-flex items-center gap-2 text-sm text-muted-foreground hover:text-primary transition-colors"
+        >
+          <ArrowLeft className="h-4 w-4" />
+          Voltar para a loja
+        </Link>
+      </div>
 
       <div className="p-4 space-y-8">
         {/* Description */}
@@ -105,7 +114,7 @@ export default async function InfoPage({ params }: PageProps) {
           </div>
           <div className="bg-secondary/20 p-4 rounded-xl space-y-3">
             {company.phone &&
-              company.phone.map((phone, idx) => (
+              (company.phone as string[]).map((phone, idx) => (
                 <div key={idx} className="flex items-center gap-3">
                   <Phone className="h-4 w-4 text-muted-foreground" />
                   <span>{formatPhone(phone)}</span>

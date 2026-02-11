@@ -42,8 +42,6 @@ export default function InformacoesPage() {
           ...company,
           name: company.name || "",
           description: company.description || "",
-          instagram: company.instagram || "",
-          facebook: company.facebook || "",
           whatsapp: company.whatsapp || "",
           minimumOrder: company.minimumOrder || 0,
           allowsDelivery: company.allowsDelivery ?? true,
@@ -83,8 +81,6 @@ export default function InformacoesPage() {
               ...typedCompany,
               name: typedCompany.name || "",
               description: typedCompany.description || "",
-              instagram: typedCompany.instagram || "",
-              facebook: typedCompany.facebook || "",
               whatsapp: typedCompany.whatsapp || "",
               minimumOrder: typedCompany.minimumOrder || 0,
               allowsDelivery: typedCompany.allowsDelivery ?? true,
@@ -269,8 +265,6 @@ export default function InformacoesPage() {
         name: formData!.name,
         description: formData!.description,
         whatsapp: formData!.whatsapp,
-        instagram: formData!.instagram,
-        facebook: formData!.facebook,
         minimumOrder: Number(formData!.minimumOrder),
         allowsDelivery: formData!.allowsDelivery,
         allowsPickup: formData!.allowsPickup,
@@ -585,48 +579,6 @@ export default function InformacoesPage() {
                   </button>
                 </div>
               </div>
-            </div>
-          </div>
-        </div>
-
-        {/* Social Info */}
-        <div className="bg-card border rounded-xl p-4 md:p-6 space-y-4">
-          <h2 className="font-bold text-foreground border-b pb-3">
-            Redes Sociais
-          </h2>
-
-          <div className="grid md:grid-cols-2 gap-4">
-            <div className="md:col-span-2">
-              <label className="block text-sm font-medium text-foreground mb-2">
-                Instagram
-              </label>
-              <input
-                type="text"
-                value={formData.instagram || ""}
-                onChange={(e) =>
-                  setFormData((prev) =>
-                    prev ? { ...prev, instagram: e.target.value } : null,
-                  )
-                }
-                placeholder="Ex: @seurestaurante"
-                className="w-full px-4 py-2.5 rounded-lg border border-input bg-background text-foreground focus:outline-none focus:ring-2 focus:ring-ring"
-              />
-            </div>
-            <div className="md:col-span-2">
-              <label className="block text-sm font-medium text-foreground mb-2">
-                Facebook
-              </label>
-              <input
-                type="text"
-                value={formData.facebook || ""}
-                onChange={(e) =>
-                  setFormData((prev) =>
-                    prev ? { ...prev, facebook: e.target.value } : null,
-                  )
-                }
-                placeholder="Ex: facebook.com/seurestaurante"
-                className="w-full px-4 py-2.5 rounded-lg border border-input bg-background text-foreground focus:outline-none focus:ring-2 focus:ring-ring"
-              />
             </div>
           </div>
         </div>
