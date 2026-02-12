@@ -114,8 +114,8 @@ mb-cardapionline/
 
 - **LOGIN CLIENTE**: `http://localhost:3000`
 - **LOGIN RESTAURANTE**: `http://localhost:3000/empresa`
-  - **EMAIL**: `admin@empresa.com`
-  - **SENHA**: `123456`
+  - **EMAIL**: `admin@salgaderia.com`
+  - **SENHA**: `admin123`
 
 ---
 
