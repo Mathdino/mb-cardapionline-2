@@ -77,12 +77,12 @@ export default async function InfoPage() {
         </div>
 
         {/* Address */}
-        <section className="space-y-4">
+        <section className="space-y-4 mb-4 pt-4 border-t border-secondary-foreground/10">
           <div className="flex items-center gap-2 text-primary font-medium">
             <MapPin className="h-5 w-5" />
             <h3>Endereço</h3>
           </div>
-          <div className="bg-secondary/20 p-4 rounded-xl">
+          <div className="bg-secondary/20 px-4 rounded-xl">
             <p>
               {address.street}, {address.number} - {address.neighborhood},{" "}
               {address.city} - {address.state}
@@ -107,12 +107,12 @@ export default async function InfoPage() {
         </section>
 
         {/* Contact */}
-        <section className="space-y-4">
+        <section className="space-y-4 mb-4 pt-4 border-t border-secondary-foreground/10">
           <div className="flex items-center gap-2 text-primary font-medium">
             <Phone className="h-5 w-5" />
             <h3>Contatos</h3>
           </div>
-          <div className="bg-secondary/20 p-4 rounded-xl space-y-3">
+          <div className="bg-secondary/20 px-4 rounded-xl space-y-3">
             {company.phone &&
               (company.phone as string[]).map((phone, idx) => (
                 <div key={idx} className="flex items-center gap-3">
@@ -124,12 +124,12 @@ export default async function InfoPage() {
         </section>
 
         {/* Hours */}
-        <section className="space-y-4">
+        <section className="space-y-4 mb-4 pt-4 border-t border-secondary-foreground/10">
           <div className="flex items-center gap-2 text-primary font-medium">
             <Clock className="h-5 w-5" />
             <h3>Horários de Funcionamento</h3>
           </div>
-          <div className="bg-secondary/20 p-4 rounded-xl space-y-2">
+          <div className="bg-secondary/20 px-4 rounded-xl space-y-2">
             {(company.businessHours as any[]).map((hour: any, idx: number) => (
               <div key={idx} className="flex justify-between text-sm">
                 <span className="font-medium w-24">{hour.dayName}</span>
@@ -146,12 +146,12 @@ export default async function InfoPage() {
         </section>
 
         {/* Minimo Value */}
-        <section className="space-y-4">
+        <section className="space-y-4 mb-4 pt-4 border-t border-secondary-foreground/10">
           <div className="flex items-center gap-2 text-primary font-medium">
             <CircleDollarSign className="h-5 w-5" />
             <h3 className="mb-0">Mínimo</h3>
           </div>
-          <div className="bg-secondary/20 p-4 rounded-xl">
+          <div className="bg-secondary/20 px-4 rounded-xl">
             <p className="text-sm text-muted-foreground">
               O valor mínimo desta loja é {formatCurrency(company.minimumOrder)}
             </p>
@@ -159,12 +159,12 @@ export default async function InfoPage() {
         </section>
 
         {/* Payment Methods */}
-        <section className="space-y-4">
+        <section className="space-y-4 pt-4 border-t border-secondary-foreground/10">
           <div className="flex items-center gap-2 text-primary font-medium">
             <CreditCard className="h-5 w-5" />
             <h3>Formas de Pagamento</h3>
           </div>
-          <div className="bg-secondary/20 p-4 rounded-xl flex flex-wrap gap-2">
+          <div className="bg-secondary/20 px-4 rounded-xl flex flex-wrap gap-2">
             {company.paymentMethods.map((method) => (
               <span
                 key={method}
