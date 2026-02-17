@@ -1,7 +1,7 @@
 "use server";
 
 import prisma from "@/lib/prisma";
-import { revalidatePath } from "next/cache";
+import { revalidatePath, revalidateTag } from "next/cache";
 import { Promotion } from "@/lib/types";
 
 export async function getPromotions(companyId: string) {
@@ -75,6 +75,7 @@ export async function createPromotion(companyId: string, data: any) {
     });
 
     revalidatePath("/empresa/dashboard/promocoes");
+    revalidateTag(`products:${companyId}`);
     return { success: true, promotion };
   } catch (error: any) {
     console.error("Error creating promotion:", error);
@@ -123,6 +124,7 @@ export async function updatePromotion(
     });
 
     revalidatePath("/empresa/dashboard/promocoes");
+    revalidateTag(`products:${companyId}`);
     return { success: true, promotion };
   } catch (error: any) {
     console.error("Error updating promotion:", error);
@@ -148,6 +150,7 @@ export async function deletePromotion(id: string, companyId: string) {
     });
 
     revalidatePath("/empresa/dashboard/promocoes");
+    revalidateTag(`products:${companyId}`);
     return { success: true };
   } catch (error) {
     console.error("Error deleting promotion:", error);
@@ -173,6 +176,7 @@ export async function togglePromotionStatus(id: string, companyId: string) {
     });
 
     revalidatePath("/empresa/dashboard/promocoes");
+    revalidateTag(`products:${companyId}`);
     return { success: true, promotion };
   } catch (error) {
     console.error("Error toggling promotion status:", error);

@@ -1,57 +1,101 @@
 "use server";
 
 import prisma from "@/lib/prisma";
-import { revalidatePath } from "next/cache";
+import { revalidatePath, revalidateTag, unstable_cache } from "next/cache";
 import { Company } from "@/lib/types";
 
 export async function getCompanies() {
   try {
-    const companies = await prisma.company.findMany({
-      orderBy: { name: "asc" },
-      select: {
-        id: true,
-        name: true,
-        slug: true,
-        description: true,
-        profileImage: true,
-        bannerImage: true,
-        address: true,
-        phone: true,
-        isOpen: true,
-        allowsDelivery: true,
-        allowsPickup: true,
+    const cached = unstable_cache(
+      async () => {
+        const companies = await prisma.company.findMany({
+          orderBy: { name: "asc" },
+          select: {
+            id: true,
+            name: true,
+            slug: true,
+            description: true,
+            profileImage: true,
+            bannerImage: true,
+            address: true,
+            phone: true,
+            isOpen: true,
+            allowsDelivery: true,
+            allowsPickup: true,
+          },
+        });
+        return companies;
       },
-    });
-    return companies;
+      ["companies:list"],
+      { revalidate: 300, tags: ["companies"] },
+    );
+    return await cached();
   } catch (error) {
     console.error("Error fetching companies:", error);
     return [];
   }
 }
 
+export async function getDefaultCompany() {
+  try {
+    const cached = unstable_cache(
+      async () => {
+        const company = await prisma.company.findFirst({
+          orderBy: { name: "asc" },
+          select: {
+            id: true,
+            name: true,
+            slug: true,
+            description: true,
+            profileImage: true,
+            bannerImage: true,
+            minimumOrder: true,
+            businessHours: true,
+            isOpen: true,
+          },
+        });
+        return company;
+      },
+      ["companies:default"],
+      { revalidate: 300, tags: ["companies"] },
+    );
+    return await cached();
+  } catch (error) {
+    console.error("Error fetching default company:", error);
+    return null;
+  }
+}
+
 export async function getCompanyBySlug(slug: string) {
   try {
-    const company = await prisma.company.findUnique({
-      where: { slug },
-      select: {
-        id: true,
-        name: true,
-        slug: true,
-        description: true,
-        profileImage: true,
-        bannerImage: true,
-        address: true,
-        phone: true,
-        whatsapp: true,
-        minimumOrder: true,
-        businessHours: true,
-        paymentMethods: true,
-        isOpen: true,
-        allowsDelivery: true,
-        allowsPickup: true,
+    const cached = unstable_cache(
+      async () => {
+        const company = await prisma.company.findUnique({
+          where: { slug },
+          select: {
+            id: true,
+            name: true,
+            slug: true,
+            description: true,
+            profileImage: true,
+            bannerImage: true,
+            address: true,
+            phone: true,
+            whatsapp: true,
+            minimumOrder: true,
+            businessHours: true,
+            paymentMethods: true,
+            isOpen: true,
+            allowsDelivery: true,
+            allowsPickup: true,
+          },
+        });
+        return company;
       },
-    });
-    return company;
+      ["company:by-slug", slug],
+      { revalidate: 300, tags: ["companies", `company:${slug}`] },
+    );
+    return await cached();
   } catch (error) {
     console.error("Error fetching company by slug:", error);
     return null;
@@ -60,27 +104,34 @@ export async function getCompanyBySlug(slug: string) {
 
 export async function getCompanyById(id: string) {
   try {
-    const company = await prisma.company.findUnique({
-      where: { id },
-      select: {
-        id: true,
-        name: true,
-        slug: true,
-        description: true,
-        profileImage: true,
-        bannerImage: true,
-        address: true,
-        phone: true,
-        whatsapp: true,
-        minimumOrder: true,
-        businessHours: true,
-        paymentMethods: true,
-        isOpen: true,
-        allowsDelivery: true,
-        allowsPickup: true,
+    const cached = unstable_cache(
+      async () => {
+        const company = await prisma.company.findUnique({
+          where: { id },
+          select: {
+            id: true,
+            name: true,
+            slug: true,
+            description: true,
+            profileImage: true,
+            bannerImage: true,
+            address: true,
+            phone: true,
+            whatsapp: true,
+            minimumOrder: true,
+            businessHours: true,
+            paymentMethods: true,
+            isOpen: true,
+            allowsDelivery: true,
+            allowsPickup: true,
+          },
+        });
+        return company;
       },
-    });
-    return company;
+      ["company:by-id", id],
+      { revalidate: 300, tags: ["companies", `company-id:${id}`] },
+    );
+    return await cached();
   } catch (error) {
     console.error("Error fetching company by id:", error);
     return null;
@@ -92,7 +143,6 @@ export async function updateCompany(companyId: string, data: any) {
     console.log("=== UPDATE COMPANY START ===");
     console.log("ID received:", companyId);
 
-    // Busca direta para simplificar
     const company = await prisma.company.findFirst();
     if (!company) {
       console.error("No company found in database");
@@ -122,8 +172,9 @@ export async function updateCompany(companyId: string, data: any) {
 
     console.log("Update success!");
     revalidatePath("/empresa/dashboard/informacoes");
+    revalidateTag("companies");
+    revalidateTag(`company:${updated.slug}`);
 
-    // Retornar um objeto plano e simples para evitar problemas de serialização do Next.js
     return {
       success: true,
       company: {
@@ -154,6 +205,8 @@ export async function toggleRestaurantStatus(
 
     revalidatePath("/empresa/dashboard");
     revalidatePath(`/${updatedCompany.slug}`);
+    revalidateTag("companies");
+    revalidateTag(`company:${updatedCompany.slug}`);
 
     return { success: true, company: updatedCompany };
   } catch (error) {

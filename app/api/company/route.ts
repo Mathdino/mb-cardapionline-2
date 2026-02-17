@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import prisma from "@/lib/prisma";
-import { revalidatePath } from "next/cache";
+import { revalidatePath, revalidateTag } from "next/cache";
 
 export async function POST(request: Request) {
   try {
@@ -40,6 +40,8 @@ export async function POST(request: Request) {
 
     console.log("API Update success!");
     revalidatePath("/empresa/dashboard/informacoes");
+    revalidateTag("companies");
+    revalidateTag(`company:${updated.slug}`);
     
     return NextResponse.json({ 
       success: true, 

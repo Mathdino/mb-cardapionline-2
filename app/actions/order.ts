@@ -130,7 +130,6 @@ export async function createOrder(data: CreateOrderData) {
     }
 
     revalidatePath("/empresa/dashboard/pedidos");
-    revalidatePath(`/loja/${company.slug}`);
     revalidatePath("/historico");
 
     return { success: true, orderId: order.id };

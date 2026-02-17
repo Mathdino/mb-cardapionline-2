@@ -1,23 +1,30 @@
 "use server";
 
 import prisma from "@/lib/prisma";
-import { revalidatePath } from "next/cache";
+import { revalidatePath, revalidateTag, unstable_cache } from "next/cache";
 
 export async function getCategories(companyId: string) {
   try {
-    const categories = await prisma.category.findMany({
-      where: { companyId },
-      orderBy: { order: "asc" },
-      select: {
-        id: true,
-        name: true,
-        order: true,
-        _count: {
-          select: { products: true },
-        },
-      }
-    });
-    return categories;
+    const cached = unstable_cache(
+      async () => {
+        const categories = await prisma.category.findMany({
+          where: { companyId },
+          orderBy: { order: "asc" },
+          select: {
+            id: true,
+            name: true,
+            order: true,
+            _count: {
+              select: { products: true },
+            },
+          },
+        });
+        return categories;
+      },
+      ["categories:list", companyId],
+      { revalidate: 300, tags: [`categories:${companyId}`] },
+    );
+    return await cached();
   } catch (error) {
     console.error("Error fetching categories:", error);
     return [];
@@ -38,6 +45,7 @@ export async function createCategory(
       },
     });
     revalidatePath("/empresa/dashboard/categorias");
+    revalidateTag(`categories:${companyId}`);
     return { success: true, category };
   } catch (error) {
     console.error("Error creating category:", error);
@@ -67,6 +75,7 @@ export async function updateCategory(
     });
 
     revalidatePath("/empresa/dashboard/categorias");
+    revalidateTag(`categories:${companyId}`);
     return { success: true, category };
   } catch (error) {
     console.error("Error updating category:", error);
@@ -90,6 +99,7 @@ export async function deleteCategory(id: string, companyId: string) {
     });
 
     revalidatePath("/empresa/dashboard/categorias");
+    revalidateTag(`categories:${companyId}`);
     return { success: true };
   } catch (error) {
     console.error("Error deleting category:", error);

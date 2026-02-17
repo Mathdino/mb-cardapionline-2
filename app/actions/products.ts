@@ -1,17 +1,24 @@
 "use server";
 
 import prisma from "@/lib/prisma";
-import { revalidatePath } from "next/cache";
+import { revalidatePath, revalidateTag, unstable_cache } from "next/cache";
 import { Prisma } from "@prisma/client";
 
 export async function getProducts(companyId: string) {
   try {
-    const products = await prisma.product.findMany({
-      where: { companyId },
-      include: { category: true },
-      orderBy: { name: "asc" },
-    });
-    return products;
+    const cached = unstable_cache(
+      async () => {
+        const products = await prisma.product.findMany({
+          where: { companyId },
+          include: { category: true },
+          orderBy: { name: "asc" },
+        });
+        return products;
+      },
+      ["products:admin", companyId],
+      { revalidate: 120, tags: [`products:${companyId}`] },
+    );
+    return await cached();
   } catch (error) {
     console.error("Error fetching products:", error);
     return [];
@@ -20,65 +27,71 @@ export async function getProducts(companyId: string) {
 
 export async function getStoreProducts(companyId: string) {
   try {
-    const now = new Date();
-    // Optimized query to only fetch needed fields and relations
-    const products = await prisma.product.findMany({
-      where: { 
-        companyId,
-        isAvailable: true // Only show available products in the store
-      },
-      select: {
-        id: true,
-        name: true,
-        description: true,
-        price: true,
-        image: true,
-        categoryId: true,
-        productType: true,
-        isPromotion: true,
-        promotionalPrice: true,
-        isAvailable: true,
-        flavors: true,
-        comboConfig: true,
-        complements: true,
-        ingredients: true,
-        preparationTime: true,
-        preparationTimeUnit: true,
-        category: {
+    const cached = unstable_cache(
+      async () => {
+        const now = new Date();
+        const products = await prisma.product.findMany({
+          where: {
+            companyId,
+            isAvailable: true,
+          },
           select: {
             id: true,
             name: true,
-          }
-        },
-        promotions: {
-          where: {
-            isActive: true,
-            startDate: { lte: now },
-            endDate: { gte: now },
-          },
-          select: {
+            description: true,
+            price: true,
+            image: true,
+            categoryId: true,
+            productType: true,
+            isPromotion: true,
             promotionalPrice: true,
+            isAvailable: true,
+            flavors: true,
+            comboConfig: true,
+            complements: true,
+            ingredients: true,
+            preparationTime: true,
+            preparationTimeUnit: true,
+            category: {
+              select: {
+                id: true,
+                name: true,
+              },
+            },
+            promotions: {
+              where: {
+                isActive: true,
+                startDate: { lte: now },
+                endDate: { gte: now },
+              },
+              select: {
+                promotionalPrice: true,
+              },
+              orderBy: { createdAt: "desc" },
+              take: 1,
+            },
           },
-          orderBy: { createdAt: "desc" },
-          take: 1,
-        },
+          orderBy: { name: "asc" },
+        });
+
+        return products.map((item) => {
+          const { promotions, ...product } = item;
+          const activePromotion = promotions && promotions[0];
+
+          if (activePromotion) {
+            return {
+              ...product,
+              isPromotion: true,
+              promotionalPrice: activePromotion.promotionalPrice,
+            };
+          }
+          return product;
+        });
       },
-      orderBy: { name: "asc" },
-    });
-
-    return products.map((item) => {
-      const { promotions, ...product } = item;
-      const activePromotion = promotions && promotions[0];
-
-      if (activePromotion) {
-        return {
-          ...product,
-          isPromotion: true,
-          promotionalPrice: activePromotion.promotionalPrice,
-        };
-      }
-      return product;
-    });
+      ["products:store", companyId],
+      { revalidate: 120, tags: [`products:${companyId}`] },
+    );
+    return await cached();
   } catch (error) {
     console.error("Error fetching store products:", error);
     return [];
@@ -111,6 +124,7 @@ export async function createProduct(companyId: string, data: any) {
     // Revalidate dashboard paths
     revalidatePath("/empresa/dashboard/produtos");
     revalidatePath("/empresa/dashboard/promocoes");
+    revalidateTag(`products:${companyId}`);
 
     // Revalidate store page
     const company = await prisma.company.findUnique({
@@ -173,6 +187,7 @@ export async function updateProduct(id: string, companyId: string, data: any) {
     // Revalidate dashboard paths
     revalidatePath("/empresa/dashboard/produtos");
     revalidatePath("/empresa/dashboard/promocoes");
+    revalidateTag(`products:${companyId}`);
 
     // Revalidate store page
     const company = await prisma.company.findUnique({
@@ -216,6 +231,7 @@ export async function deleteProduct(id: string, companyId: string) {
     // Revalidate dashboard paths
     revalidatePath("/empresa/dashboard/produtos");
     revalidatePath("/empresa/dashboard/promocoes");
+    revalidateTag(`products:${companyId}`);
 
     // Revalidate store page
     const company = await prisma.company.findUnique({

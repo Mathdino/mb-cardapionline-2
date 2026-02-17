@@ -1,17 +1,13 @@
-import { getCompanies } from "@/app/actions/company";
 import { getCategories } from "@/app/actions/categories";
 import { getStoreProducts } from "@/app/actions/products";
 import RestaurantPage from "./[slug]/restaurant-page";
-import prisma from "@/lib/prisma";
 import { SiteFooter } from "@/components/client/site-footer";
+import { getDefaultCompany } from "@/app/actions/company";
 
-export const dynamic = "force-dynamic";
+export const revalidate = 120;
 
 export default async function HomePage() {
-  // Fetch only the first company instead of all companies
-  const company = await prisma.company.findFirst({
-    orderBy: { name: "asc" },
-  });
+  const company = await getDefaultCompany();
 
   if (!company) {
     return (

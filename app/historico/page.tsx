@@ -5,7 +5,7 @@ import { getCustomerOrders } from "@/app/actions/order";
 import { OrderHistoryList } from "@/components/client/order-history-list";
 import { Metadata } from "next";
 import { ScrollHeader } from "@/components/client/scroll-header";
-import { getCompanies } from "@/app/actions/company";
+import { getDefaultCompany } from "@/app/actions/company";
 
 export const metadata: Metadata = {
   title: "Histórico de Compras",
@@ -19,12 +19,10 @@ export default async function OrderHistoryPage() {
     redirect("/entrar");
   }
 
-  const [orders, companies] = await Promise.all([
+  const [orders, company] = await Promise.all([
     getCustomerOrders(session.user.id),
-    getCompanies(),
+    getDefaultCompany(),
   ]);
-
-  const company = companies[0];
 
   return (
     <div className="container mx-auto py-10 px-4 pt-20">

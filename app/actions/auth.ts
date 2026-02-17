@@ -1,15 +1,7 @@
 "use server";
 
-import { PrismaClient } from "@prisma/client";
-import { PrismaPg } from "@prisma/adapter-pg";
-import { Pool } from "pg";
+import prisma from "@/lib/prisma";
 import { compare } from "bcryptjs";
-
-const connectionString = process.env.DATABASE_URL;
-
-const pool = new Pool({ connectionString });
-const adapter = new PrismaPg(pool);
-const prisma = new PrismaClient({ adapter });
 
 export async function authenticateUser(email: string, password: string) {
   try {
@@ -30,9 +22,6 @@ export async function authenticateUser(email: string, password: string) {
       return { success: false, error: "Invalid password" };
     }
 
-    // Transform to match frontend types if needed
-    // The frontend User interface expects 'role' as 'admin' | 'company'
-    // The DB has 'company_owner'. Mapping it:
     const mappedUser = {
       ...user,
       role: user.role === "company_owner" ? "company" : user.role,

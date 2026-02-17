@@ -5,7 +5,7 @@ import "./globals.css";
 import { AuthProvider } from "@/components/providers/auth-provider";
 import { Toaster } from "sonner";
 import { SiteFooter } from "@/components/client/site-footer";
-import { getCompanies } from "@/app/actions/company";
+import { getDefaultCompany } from "@/app/actions/company";
 import { RestaurantProvider } from "@/components/client/restaurant-context";
 
 const _geist = Geist({ subsets: ["latin"] });
@@ -27,8 +27,7 @@ export default async function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  const companies = await getCompanies();
-  const defaultCompany = companies[0] || null;
+  const defaultCompany = await getDefaultCompany();
 
   return (
     <html lang="en">

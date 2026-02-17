@@ -55,33 +55,12 @@ export const authOptions: NextAuthOptions = {
     async session({ session, token }) {
       if (token && session.user && token.sub) {
         session.user.id = token.sub;
-
-        try {
-          const freshUser = await prisma.user.findUnique({
-            where: { id: token.sub },
-          });
-
-          if (freshUser) {
-            session.user.role = freshUser.role;
-            session.user.phone = freshUser.phone;
-            session.user.cpf = freshUser.cpf;
-            session.user.address = freshUser.address;
-            session.user.name = freshUser.name;
-          } else {
-            // Fallback to token if user not found (shouldn't happen usually)
-            session.user.role = token.role as string;
-            session.user.phone = token.phone as string | null;
-            session.user.cpf = token.cpf as string | null;
-            session.user.address = token.address;
-          }
-        } catch (error) {
-          console.error("Error fetching fresh user data:", error);
-          // Fallback to token on error
-          session.user.role = token.role as string;
-          session.user.phone = token.phone as string | null;
-          session.user.cpf = token.cpf as string | null;
-          session.user.address = token.address;
-        }
+        session.user.role = token.role as string;
+        session.user.phone = token.phone as string | null;
+        session.user.cpf = token.cpf as string | null;
+        session.user.address = token.address;
+        session.user.name =
+          session.user.name ?? (token.name as string | undefined) ?? null;
       }
       return session;
     },

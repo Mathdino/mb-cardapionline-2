@@ -11,15 +11,13 @@ import {
 } from "lucide-react";
 import { ScrollHeader } from "@/components/client/scroll-header";
 import Link from "next/link";
-import prisma from "@/lib/prisma";
+import { getDefaultCompany } from "@/app/actions/company";
 import { formatCurrency, formatPhone, paymentMethodLabels } from "@/lib/utils";
 
-export const dynamic = "force-dynamic";
+export const revalidate = 300;
 
 export default async function InfoPage() {
-  const company = await prisma.company.findFirst({
-    orderBy: { name: "asc" },
-  });
+  const company = await getDefaultCompany();
 
   if (!company) {
     notFound();

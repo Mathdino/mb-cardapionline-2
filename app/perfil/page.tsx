@@ -6,6 +6,7 @@ import { ProfileForm } from "@/components/client/profile-form";
 import { Metadata } from "next";
 import { ScrollHeader } from "@/components/client/scroll-header";
 import { getCompanies } from "@/app/actions/company";
+import { getDefaultCompany } from "@/app/actions/company";
 
 export const metadata: Metadata = {
   title: "Meu Perfil",
@@ -19,18 +20,16 @@ export default async function ProfilePage() {
     redirect("/entrar");
   }
 
-  const [user, companies] = await Promise.all([
+  const [user, company] = await Promise.all([
     prisma.user.findUnique({
       where: { id: session.user.id },
     }),
-    getCompanies(),
+    getDefaultCompany(),
   ]);
 
   if (!user) {
     redirect("/entrar");
   }
-
-  const company = companies[0];
 
   return (
     <div className="container mx-auto py-10 px-4 pt-20">
