@@ -19,6 +19,7 @@ import {
   MapPin,
   Truck,
   Store,
+  ShoppingBag,
 } from "lucide-react";
 import { useState, useEffect, useMemo } from "react";
 import Image from "next/image";
@@ -686,6 +687,10 @@ export function CartSheet({ company }: CartSheetProps) {
               </div>
               {company.allowsDelivery && company.allowsPickup && (
                 <div className="rounded-2xl border bg-card p-4">
+                  <div className="flex items-center gap-2">
+                    <ShoppingBag className="h-5 w-5" />
+                    <span className={sectionTitle}>Metódo de Entrega</span>
+                  </div>
                   <div className="grid grid-cols-2 gap-4">
                     <button
                       type="button"
