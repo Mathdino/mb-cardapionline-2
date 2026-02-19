@@ -4,7 +4,7 @@ import RestaurantPage from "./[slug]/restaurant-page";
 import { SiteFooter } from "@/components/client/site-footer";
 import { getDefaultCompany } from "@/app/actions/company";
 
-export const revalidate = 120;
+export const dynamic = "force-dynamic";
 
 export default async function HomePage() {
   const company = await getDefaultCompany();
