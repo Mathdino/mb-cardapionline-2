@@ -4,20 +4,25 @@ import prisma from "@/lib/prisma";
 import { revalidatePath, revalidateTag, unstable_cache } from "next/cache";
 import { Prisma } from "@prisma/client";
 
-export async function getProducts(companyId: string) {
+export async function getProducts(companyId: string, options?: { cache?: boolean }) {
   try {
-    const cached = unstable_cache(
-      async () => {
-        const products = await prisma.product.findMany({
-          where: { companyId },
-          include: { category: true },
-          orderBy: { name: "asc" },
-        });
-        return products;
-      },
-      ["products:admin", companyId],
-      { revalidate: 120, tags: [`products:${companyId}`] },
-    );
+    const query = async () => {
+      const products = await prisma.product.findMany({
+        where: { companyId },
+        include: { category: true },
+        orderBy: { name: "asc" },
+      });
+      return products;
+    };
+
+    if (options?.cache === false) {
+      return await query();
+    }
+
+    const cached = unstable_cache(query, ["products:admin", companyId], {
+      revalidate: 120,
+      tags: [`products:${companyId}`],
+    });
     return await cached();
   } catch (error) {
     console.error("Error fetching products:", error);

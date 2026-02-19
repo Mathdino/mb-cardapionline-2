@@ -295,9 +295,12 @@ export default function PedidosPage() {
                     <div className="flex items-start gap-1.5 mt-2 text-xs text-muted-foreground">
                       <MapPin className="h-3.5 w-3.5 mt-0.5 shrink-0" />
                       <span className="line-clamp-2">
-                        {order.deliveryAddress.street},{" "}
-                        {order.deliveryAddress.number} -{" "}
-                        {order.deliveryAddress.neighborhood}
+                    {order.deliveryAddress.street},{" "}
+                    {order.deliveryAddress.number}
+                    {order.deliveryAddress.complement
+                      ? ` - ${order.deliveryAddress.complement}`
+                      : ""}{" "}
+                    - {order.deliveryAddress.neighborhood}
                       </span>
                     </div>
                   ) : (
@@ -448,7 +451,11 @@ export default function PedidosPage() {
                       <p className="font-semibold">Endereço de Entrega:</p>
                       <p>
                         {selectedOrder.deliveryAddress.street},{" "}
-                        {selectedOrder.deliveryAddress.number} -{" "}
+                        {selectedOrder.deliveryAddress.number}
+                        {selectedOrder.deliveryAddress.complement
+                          ? ` - ${selectedOrder.deliveryAddress.complement}`
+                          : ""}{" "}
+                        -{" "}
                         {selectedOrder.deliveryAddress.neighborhood},{" "}
                         {selectedOrder.deliveryAddress.city} -{" "}
                         {selectedOrder.deliveryAddress.state},

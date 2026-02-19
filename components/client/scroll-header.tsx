@@ -80,6 +80,15 @@ export function ScrollHeader({
     }
   };
 
+  const handleGoToStore = () => {
+    if (typeof window === "undefined") return;
+    if (window.location.pathname === "/") {
+      window.location.reload();
+    } else {
+      window.location.href = "/";
+    }
+  };
+
   return (
     <header
       className={`fixed top-0 left-0 right-0 z-50 bg-background shadow-sm transition-transform duration-300 ${
@@ -147,6 +156,10 @@ export function ScrollHeader({
                         <>
                           <Link
                             href="/"
+                            onClick={(e) => {
+                              e.preventDefault();
+                              handleGoToStore();
+                            }}
                             className="flex items-center gap-3 px-4 py-3 hover:bg-secondary rounded-lg transition-colors"
                           >
                             <Store className="h-5 w-5 text-muted-foreground" />

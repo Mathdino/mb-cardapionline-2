@@ -80,7 +80,7 @@ export default function PromocoesPage() {
         try {
           const [productsData, promotionsData, categoriesData] =
             await Promise.all([
-              getProducts(company.id),
+              getProducts(company.id, { cache: false }),
               getPromotions(company.id),
               getCategories(company.id),
             ]);

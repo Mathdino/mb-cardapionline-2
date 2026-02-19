@@ -24,6 +24,7 @@ export function ProfileForm({ user }: ProfileFormProps) {
       cep: user.address?.cep || "",
       street: user.address?.street || "",
       number: user.address?.number || "",
+      complement: user.address?.complement || "",
       neighborhood: user.address?.neighborhood || "",
       city: user.address?.city || "",
       state: user.address?.state || "",
@@ -220,7 +221,7 @@ export function ProfileForm({ user }: ProfileFormProps) {
           </div>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div>
             <Label htmlFor="city">Cidade</Label>
             <Input
@@ -240,6 +241,17 @@ export function ProfileForm({ user }: ProfileFormProps) {
             />
           </div>
         </div>
+
+      <div>
+        <Label htmlFor="complement">Complemento</Label>
+        <Input
+          id="complement"
+          name="complement"
+          value={formData.address.complement}
+          onChange={handleAddressChange}
+          placeholder="Apto, bloco, referência"
+        />
+      </div>
       </div>
 
       <Button type="submit" disabled={loading}>

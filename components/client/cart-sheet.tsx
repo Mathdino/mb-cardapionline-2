@@ -57,6 +57,7 @@ export function CartSheet({ company }: CartSheetProps) {
   const [deliveryAddress, setDeliveryAddress] = useState({
     street: "",
     number: "",
+    complement: "",
     neighborhood: "",
     city: "",
     state: "",
@@ -212,6 +213,7 @@ export function CartSheet({ company }: CartSheetProps) {
         setDeliveryAddress((prev) => ({
           street: addr.street || prev.street,
           number: addr.number || prev.number,
+          complement: addr.complement || prev.complement,
           neighborhood: addr.neighborhood || prev.neighborhood,
           city: addr.city || prev.city,
           state: addr.state || prev.state,
@@ -335,7 +337,7 @@ export function CartSheet({ company }: CartSheetProps) {
       if (customerCpf) message += `*CPF:* ${customerCpf}\n`;
 
       if (deliveryType === "delivery") {
-        message += `*Endereço:* ${deliveryAddress.street}, ${deliveryAddress.number} - ${deliveryAddress.neighborhood}\n\n`;
+        message += `*Endereço:* ${deliveryAddress.street}, ${deliveryAddress.number}${deliveryAddress.complement ? ` - ${deliveryAddress.complement}` : ""} - ${deliveryAddress.neighborhood}\n\n`;
       } else {
         message += `*Tipo:* Retirada no Local\n\n`;
       }
@@ -400,6 +402,7 @@ export function CartSheet({ company }: CartSheetProps) {
       setDeliveryAddress({
         street: "",
         number: "",
+        complement: "",
         neighborhood: "",
         city: "",
         state: "",
@@ -732,7 +735,7 @@ export function CartSheet({ company }: CartSheetProps) {
                     <div className="text-left">
                       <div className="text-sm font-medium">
                         {deliveryAddress.street && deliveryAddress.number
-                          ? `${deliveryAddress.street}, ${deliveryAddress.number}`
+                          ? `${deliveryAddress.street}, ${deliveryAddress.number}${deliveryAddress.complement ? ` - ${deliveryAddress.complement}` : ""}`
                           : "Definir endereço"}
                       </div>
                       <div className="text-xs text-muted-foreground">
@@ -831,8 +834,8 @@ export function CartSheet({ company }: CartSheetProps) {
                     <span className="font-medium">
                       {paymentMethodLabels[paymentMethod]}
                     </span>
-                    <div className="h-5 w-5 rounded-full border-2 border-primary flex items-center justify-center">
-                      <div className="h-2.5 w-2.5 rounded-full bg-primary" />
+                    <div className="h-5 w-5 rounded-full border-2 border-brand flex items-center justify-center">
+                      <div className="h-2.5 w-2.5 rounded-full bg-brand" />
                     </div>
                   </div>
                 ) : (
@@ -1006,7 +1009,7 @@ export function CartSheet({ company }: CartSheetProps) {
                     !customerPhone.trim() ||
                     isSubmitting
                   }
-                  className="h-12 px-6 rounded-lg bg-yellow-400 text-black font-bold"
+                  className="h-12 px-6 rounded-lg bg-brand text-black font-bold"
                 >
                   {isSubmitting ? "Processando..." : "Pedir"}
                 </button>
@@ -1070,6 +1073,18 @@ export function CartSheet({ company }: CartSheetProps) {
                 className="px-4 py-3 rounded-lg border"
               />
             </div>
+            <input
+              type="text"
+              value={deliveryAddress.complement}
+              onChange={(e) =>
+                setDeliveryAddress({
+                  ...deliveryAddress,
+                  complement: e.target.value,
+                })
+              }
+              placeholder="Complemento (apto, bloco, referência)"
+              className="w-full px-4 py-3 rounded-lg border"
+            />
             <div className="grid grid-cols-2 gap-3">
               <input
                 type="text"

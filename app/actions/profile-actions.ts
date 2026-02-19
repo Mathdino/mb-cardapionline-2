@@ -14,6 +14,7 @@ export async function updateProfile(data: {
     cep: string;
     street: string;
     number: string;
+    complement?: string;
     neighborhood: string;
     city: string;
     state: string;

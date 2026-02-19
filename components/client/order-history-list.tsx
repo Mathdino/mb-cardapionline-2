@@ -171,6 +171,9 @@ function OrderProgress({ order }: { order: any }) {
                   <p className="text-sm font-semibold">
                     {order.deliveryAddress.street},{" "}
                     {order.deliveryAddress.number}
+                    {order.deliveryAddress.complement
+                      ? ` - ${order.deliveryAddress.complement}`
+                      : ""}
                   </p>
                   <p className="text-xs text-muted-foreground">
                     {order.deliveryAddress.neighborhood} -{" "}
@@ -449,6 +452,9 @@ export function OrderHistoryList({ orders }: { orders: any[] }) {
                     <p className="text-muted-foreground">
                       {selectedOrder.deliveryAddress.street},{" "}
                       {selectedOrder.deliveryAddress.number}
+                      {selectedOrder.deliveryAddress.complement
+                        ? ` - ${selectedOrder.deliveryAddress.complement}`
+                        : ""}
                     </p>
                     <p className="text-muted-foreground">
                       {selectedOrder.deliveryAddress.neighborhood} -{" "}
