@@ -203,10 +203,10 @@ export function CartSheet({ company }: CartSheetProps) {
         setCustomerName(session.user.name);
       }
       if (session.user.phone && !customerPhone) {
-        setCustomerPhone(session.user.phone);
+        setCustomerPhone(formatPhone(session.user.phone));
       }
       if (session.user.cpf && !customerCpf) {
-        setCustomerCpf(session.user.cpf);
+        setCustomerCpf(formatCPF(session.user.cpf));
       }
       if (session.user.address) {
         const addr = session.user.address;
@@ -692,7 +692,7 @@ export function CartSheet({ company }: CartSheetProps) {
                       onClick={() => setDeliveryType("delivery")}
                       className={`flex items-center justify-center gap-3 p-4 rounded-xl border-2 ${
                         deliveryType === "delivery"
-                          ? "border-primary bg-primary/5 text-primary"
+                          ? "border-brand bg-brand/15 text-primary"
                           : "border-muted text-muted-foreground"
                       }`}
                     >
@@ -704,7 +704,7 @@ export function CartSheet({ company }: CartSheetProps) {
                       onClick={() => setDeliveryType("pickup")}
                       className={`flex items-center justify-center gap-3 p-4 rounded-xl border-2 ${
                         deliveryType === "pickup"
-                          ? "border-primary bg-primary/5 text-primary"
+                          ? "border-brand bg-brand/15 text-primary"
                           : "border-muted text-muted-foreground"
                       }`}
                     >
@@ -717,15 +717,13 @@ export function CartSheet({ company }: CartSheetProps) {
               <div className="rounded-2xl border bg-card p-4 space-y-3">
                 <div className="flex items-center gap-2">
                   <MapPin className="h-5 w-5" />
-                  <div className="flex-1 flex items-center justify-between">
-                    <span className={sectionTitle}>Endereço de entrega</span>
-                    <span className="text-muted-foreground text-xs">
-                      {deliveryType === "delivery"
-                        ? "Entrega da loja"
-                        : "Retirada na loja"}
-                    </span>
-                  </div>
+                  <span className={sectionTitle}>Endereço de entrega</span>
                 </div>
+                <span className="text-muted-foreground text-xs">
+                  {deliveryType === "delivery"
+                    ? "Entrega da loja"
+                    : "Retirada na loja"}
+                </span>
                 {deliveryType === "delivery" && company.allowsDelivery && (
                   <button
                     type="button"
@@ -762,7 +760,7 @@ export function CartSheet({ company }: CartSheetProps) {
                 <div className="space-y-4">
                   {availableSlots.length > 0 ? (
                     <div className="space-y-6">
-                      <div className="flex gap-2 overflow-x-auto pb-2 -mx-1 px-1">
+                      <div className="flex gap-2 overflow-x-auto no-scrollbar pb-2 -mx-1 px-1">
                         {Object.keys(groupedSlots).map((dateStr) => (
                           <button
                             key={dateStr}
@@ -924,7 +922,7 @@ export function CartSheet({ company }: CartSheetProps) {
                   </div>
                   <div className="flex items-center gap-2">
                     <span className="text-sm text-muted-foreground">
-                      {coupon ? `Aplicado: ${coupon.code}` : "Não disponível"}
+                      {coupon ? `${coupon.code}` : ""}
                     </span>
                     <ChevronRight className="h-4 w-4 text-muted-foreground" />
                   </div>
