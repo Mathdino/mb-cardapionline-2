@@ -988,9 +988,9 @@ export function CartSheet({ company }: CartSheetProps) {
                 />
               </div>
               <div className="px-1 text-xs text-muted-foreground">
-                Este pedido é entregue pela loja. Ao tocar no botão de
-                pagamento, você concorda em fornecer seu nome, endereço e número
-                de telefone à loja para entrega.
+                Este pedido é entregue pela loja. Ao tocar no botão de "pedir",
+                você concorda em fornecer seu nome, endereço e número de
+                telefone à loja para entrega.
               </div>
             </div>
             <div className="p-4 border-t bg-background">
