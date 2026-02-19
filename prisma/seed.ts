@@ -92,7 +92,6 @@ async function main() {
       },
       businessHours: businessHours,
       paymentMethods: ["cash", "pix", "credit", "debit"],
-      averagePreparationTime: 40,
       isOpen: true,
     },
   });

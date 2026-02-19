@@ -70,6 +70,28 @@ export const authOptions: NextAuthOptions = {
         token.phone = user.phone;
         token.cpf = user.cpf;
         token.address = user.address;
+      } else if (token.sub) {
+        const dbUser = await prisma.user.findUnique({
+          where: { id: token.sub },
+          select: {
+            role: true,
+            phone: true,
+            cpf: true,
+            address: true,
+            name: true,
+            email: true,
+            image: true,
+          },
+        });
+        if (dbUser) {
+          token.role = dbUser.role;
+          token.phone = dbUser.phone;
+          token.cpf = dbUser.cpf;
+          token.address = dbUser.address;
+          token.name = dbUser.name ?? token.name;
+          token.email = dbUser.email ?? token.email;
+          token.picture = dbUser.image ?? token.picture;
+        }
       }
       return token;
     },

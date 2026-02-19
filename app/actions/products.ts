@@ -25,72 +25,77 @@ export async function getProducts(companyId: string) {
   }
 }
 
-export async function getStoreProducts(companyId: string) {
+export async function getStoreProducts(companyId: string, options?: { cache?: boolean }) {
   try {
-    const cached = unstable_cache(
-      async () => {
-        const now = new Date();
-        const products = await prisma.product.findMany({
-          where: {
-            companyId,
-            isAvailable: true,
+    const now = new Date();
+    const query = async () => {
+      const products = await prisma.product.findMany({
+        where: {
+          companyId,
+          isAvailable: true,
+        },
+        select: {
+          id: true,
+          name: true,
+          description: true,
+          price: true,
+          image: true,
+          categoryId: true,
+          productType: true,
+          isPromotion: true,
+          promotionalPrice: true,
+          isAvailable: true,
+          flavors: true,
+          comboConfig: true,
+          complements: true,
+          ingredients: true,
+          preparationTime: true,
+          preparationTimeUnit: true,
+          category: {
+            select: {
+              id: true,
+              name: true,
+            },
           },
-          select: {
-            id: true,
-            name: true,
-            description: true,
-            price: true,
-            image: true,
-            categoryId: true,
-            productType: true,
+          promotions: {
+            where: {
+              isActive: true,
+              startDate: { lte: now },
+              endDate: { gte: now },
+            },
+            select: {
+              promotionalPrice: true,
+            },
+            orderBy: { createdAt: "desc" },
+            take: 1,
+          },
+        },
+        orderBy: { name: "asc" },
+      });
+
+      return products.map((item) => {
+        const { promotions, ...product } = item;
+        const activePromotion = promotions && promotions[0];
+
+        if (activePromotion) {
+          return {
+            ...product,
             isPromotion: true,
-            promotionalPrice: true,
-            isAvailable: true,
-            flavors: true,
-            comboConfig: true,
-            complements: true,
-            ingredients: true,
-            preparationTime: true,
-            preparationTimeUnit: true,
-            category: {
-              select: {
-                id: true,
-                name: true,
-              },
-            },
-            promotions: {
-              where: {
-                isActive: true,
-                startDate: { lte: now },
-                endDate: { gte: now },
-              },
-              select: {
-                promotionalPrice: true,
-              },
-              orderBy: { createdAt: "desc" },
-              take: 1,
-            },
-          },
-          orderBy: { name: "asc" },
-        });
+            promotionalPrice: activePromotion.promotionalPrice,
+          };
+        }
+        return product;
+      });
+    };
 
-        return products.map((item) => {
-          const { promotions, ...product } = item;
-          const activePromotion = promotions && promotions[0];
+    if (options?.cache === false) {
+      return await query();
+    }
 
-          if (activePromotion) {
-            return {
-              ...product,
-              isPromotion: true,
-              promotionalPrice: activePromotion.promotionalPrice,
-            };
-          }
-          return product;
-        });
-      },
-      ["products:store", companyId],
-      { revalidate: 120, tags: [`products:${companyId}`] },
-    );
+    const cached = unstable_cache(query, ["products:store", companyId], {
+      revalidate: 120,
+      tags: [`products:${companyId}`],
+    });
     return await cached();
   } catch (error) {
     console.error("Error fetching store products:", error);

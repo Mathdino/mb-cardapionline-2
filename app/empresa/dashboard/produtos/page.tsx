@@ -248,7 +248,7 @@ function ProdutosContent() {
     async function load() {
       if (company?.id) {
         const [productsData, categoriesData] = await Promise.all([
-          getStoreProducts(company.id),
+          getStoreProducts(company.id, { cache: false }),
           getCategories(company.id),
         ]);
         setProducts(productsData);

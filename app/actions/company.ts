@@ -49,9 +49,15 @@ export async function getDefaultCompany() {
             description: true,
             profileImage: true,
             bannerImage: true,
+            address: true,
+            phone: true,
+            whatsapp: true,
             minimumOrder: true,
             businessHours: true,
             isOpen: true,
+            paymentMethods: true,
+            allowsDelivery: true,
+            allowsPickup: true,
           },
         });
         return company;

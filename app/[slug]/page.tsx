@@ -34,7 +34,7 @@ export default async function Page({ params }: PageProps) {
 
   const [allCategories, products] = await Promise.all([
     getCategories(company.id),
-    getStoreProducts(company.id),
+    getStoreProducts(company.id, { cache: false }),
   ]);
 
   const categories = allCategories;

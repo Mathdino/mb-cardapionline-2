@@ -114,8 +114,15 @@ mb-cardapionline/
 
 - **LOGIN CLIENTE**: `http://localhost:3000`
 - **LOGIN RESTAURANTE**: `http://localhost:3000/empresa`
-  - **EMAIL**: `admin@salgaderia.com`
-  - **SENHA**: `admin123`
+  - **EMAIL**: `admin@empresa.com`
+  - **SENHA**: `123456`
+
+<!-- PRIMEIRO PASSO
+
+npx prisma generate
+npx ts-node prisma/seed.ts
+
+-->
 
 ---
 
