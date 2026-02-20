@@ -19,10 +19,12 @@ import {
   togglePromotionStatus,
 } from "@/app/actions/promotions";
 import type { Product, Promotion } from "@/lib/types";
-import { Plus, Pencil, Trash2, X, Tag, ImageIcon } from "lucide-react";
+import { Plus, Pencil, Trash2, X, Tag, ImageIcon, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { ImageCropper } from "@/components/client/image-cropper";
 import { FoodLoading } from "@/components/ui/food-loading";
+import { ProductModal } from "@/components/client/product-modal";
+import { CartProvider } from "@/lib/cart-context";
 
 export default function PromocoesPage() {
   const { getCompany } = useAuth();
@@ -61,6 +63,8 @@ export default function PromocoesPage() {
   const fileInputRef = React.useRef<HTMLInputElement>(null);
   const [cropModalOpen, setCropModalOpen] = useState(false);
   const [tempImageSrc, setTempImageSrc] = useState<string | null>(null);
+  const [previewOpen, setPreviewOpen] = useState(false);
+  const [previewProduct, setPreviewProduct] = useState<Product | null>(null);
 
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingPromotion, setEditingPromotion] = useState<Promotion | null>(
@@ -121,6 +125,56 @@ export default function PromocoesPage() {
       });
     }
     setIsModalOpen(true);
+  };
+
+  const openPreviewAsCustomer = () => {
+    if (!company) return;
+    const preview: Product = {
+      id: "preview-combo",
+      companyId: company.id,
+      categoryId: comboFormData.categoryId || "",
+      name: comboFormData.name || "Combo",
+      description: comboFormData.description || "",
+      image: comboFormData.image || "",
+      price: parseFloat(comboFormData.price || "0"),
+      promotionalPrice: null,
+      isPromotion: false,
+      productType: "combo",
+      flavors: null,
+      comboConfig: {
+        maxItems: parseInt(comboFormData.comboConfig.maxItems || "1"),
+        groups: comboFormData.comboConfig.groups.map((g) => ({
+          id: g.id,
+          title: g.title,
+          type: g.type,
+          min: parseInt(g.min || "0"),
+          max: parseInt(g.max || "0"),
+          productIds: g.type === "products" ? g.productIds : undefined,
+          productPrices: g.productPrices
+            ? Object.fromEntries(
+                Object.entries(g.productPrices).map(([k, v]) => [
+                  k,
+                  parseFloat(String(v || "0")),
+                ]),
+              )
+            : undefined,
+          options:
+            g.type === "custom"
+              ? g.options.map((opt) => ({
+                  id: opt.id,
+                  name: opt.name,
+                  priceModifier: parseFloat(opt.price || "0"),
+                }))
+              : undefined,
+        })),
+      },
+      ingredients: [],
+      isAvailable: true,
+      preparationTime: 0,
+      preparationTimeUnit: "hours",
+    };
+    setPreviewProduct(preview);
+    setPreviewOpen(true);
   };
 
   const handleCloseModal = () => {
@@ -248,7 +302,7 @@ export default function PromocoesPage() {
       if (result.success) {
         // Refresh data
         const [productsData, promotionsData] = await Promise.all([
-          getProducts(company.id),
+          getProducts(company.id, { cache: false }),
           getPromotions(company.id),
         ]);
         setProducts(productsData as unknown as Product[]);
@@ -325,7 +379,7 @@ export default function PromocoesPage() {
     if (confirm("Tem certeza que deseja excluir este combo?")) {
       const result = await deleteProduct(productId, company.id);
       if (result.success) {
-        const productsData = await getProducts(company.id);
+        const productsData = await getProducts(company.id, { cache: false });
         setProducts(productsData as unknown as Product[]);
       } else {
         alert("Erro ao excluir combo");
@@ -593,9 +647,18 @@ export default function PromocoesPage() {
             {/* Header */}
             <div className="flex justify-between items-center mb-6">
               <h2 className="text-xl font-bold">Adicionar Novo Combo</h2>
-              <button onClick={() => setIsComboModalOpen(false)}>
-                <X className="h-6 w-6" />
-              </button>
+              <div className="flex items-center gap-2">
+                <Button
+                  variant="secondary"
+                  size="sm"
+                  onClick={openPreviewAsCustomer}
+                >
+                  Pré-visualizar
+                </Button>
+                <button onClick={() => setIsComboModalOpen(false)}>
+                  <X className="h-6 w-6" />
+                </button>
+              </div>
             </div>
 
             <form onSubmit={handleCreateCombo} className="space-y-6">
@@ -616,14 +679,14 @@ export default function PromocoesPage() {
                 />
               </div>
 
-              {/* Image Upload */}
+              {/* Image Upload - estilo banner */}
               <div>
                 <label className="block text-sm font-medium mb-1">
                   Imagem do Combo
                 </label>
                 <div
                   onClick={() => fileInputRef.current?.click()}
-                  className="relative aspect-video bg-secondary rounded-lg overflow-hidden border-2 border-dashed border-muted-foreground/20 hover:border-primary/50 transition-colors group cursor-pointer"
+                  className="relative aspect-video bg-secondary rounded-xl overflow-hidden border-2 border-dashed border-muted-foreground/20 hover:border-primary/50 transition-colors group cursor-pointer"
                 >
                   {comboFormData.image ? (
                     <Image
@@ -643,6 +706,14 @@ export default function PromocoesPage() {
                       <Loader2 className="h-8 w-8 animate-spin text-white" />
                     </div>
                   )}
+                  <button
+                    type="button"
+                    onClick={() => setIsComboModalOpen(false)}
+                    className="absolute top-3 right-3 p-2 rounded-full bg-black/30 text-white hover:bg-black/50"
+                    aria-label="Fechar"
+                  >
+                    <X className="h-4 w-4" />
+                  </button>
                 </div>
                 <input
                   type="file"
@@ -669,6 +740,11 @@ export default function PromocoesPage() {
                 />
               </div>
 
+              {/* Indicador semelhante à Home */}
+              <div className="text-sm font-medium text-muted-foreground">
+                Monte seu combo
+              </div>
+
               <div>
                 <label className="block text-sm font-medium mb-1">
                   Categoria
@@ -693,7 +769,7 @@ export default function PromocoesPage() {
                 </select>
               </div>
 
-              {/* Combo Groups */}
+              {/* Combo Groups - estilo semelhante ao modal da Home */}
               <div className="border-t pt-4">
                 <div className="flex justify-between items-center mb-4">
                   <h3 className="font-bold">Configuração do Combo</h3>
@@ -711,12 +787,29 @@ export default function PromocoesPage() {
                   {comboFormData.comboConfig.groups.map((group, idx) => (
                     <div
                       key={group.id}
-                      className="border p-4 rounded-lg bg-secondary/10"
+                      className="border p-4 rounded-xl bg-secondary/10"
                     >
-                      <div className="flex justify-between mb-3">
-                        <h4 className="font-semibold">
-                          Grupo {comboFormData.comboConfig.groups.length - idx}
-                        </h4>
+                      <div className="flex justify-between items-start mb-3">
+                        <div>
+                          <h4 className="font-semibold text-foreground">
+                            {group.title ||
+                              `Grupo ${comboFormData.comboConfig.groups.length - idx}`}
+                          </h4>
+                          <p className="text-xs text-muted-foreground">
+                            {(() => {
+                              const min = parseInt(String(group.min) || "0");
+                              const max = parseInt(String(group.max) || "0");
+                              if (max >= 999) {
+                                return min > 0
+                                  ? `Escolha pelo menos ${min} opções`
+                                  : "Escolha à vontade";
+                              }
+                              return `Escolha ${
+                                min === max ? min : `${min} a ${max}`
+                              } opções`;
+                            })()}
+                          </p>
+                        </div>
                         <Button
                           type="button"
                           variant="ghost"
@@ -879,11 +972,11 @@ export default function PromocoesPage() {
                               ))}
                             </select>
                           </div>
-                          <div className="max-h-40 overflow-y-auto border p-2 rounded bg-background">
+                          <div className="max-h-40 overflow-y-auto border p-2 rounded-xl bg-background space-y-2">
                             {products.map((prod) => (
                               <div
                                 key={prod.id}
-                                className="flex items-center justify-between gap-2 p-1 hover:bg-secondary"
+                                className="flex items-center justify-between p-3 border rounded-lg bg-secondary/20"
                               >
                                 <label className="flex items-center gap-2 cursor-pointer flex-1">
                                   <input
@@ -901,7 +994,6 @@ export default function PromocoesPage() {
                                         ].productIds.filter(
                                           (id) => id !== prod.id,
                                         );
-                                        // Optional: remove price override if unchecked
                                         if (newGroups[idx].productPrices) {
                                           delete newGroups[idx].productPrices[
                                             prod.id
@@ -917,7 +1009,14 @@ export default function PromocoesPage() {
                                       });
                                     }}
                                   />
-                                  <span className="text-sm">{prod.name}</span>
+                                  <div>
+                                    <div className="font-medium text-sm">
+                                      {prod.name}
+                                    </div>
+                                    <div className="text-xs text-muted-foreground">
+                                      {formatCurrency(prod.price)}
+                                    </div>
+                                  </div>
                                 </label>
                                 {group.productIds.includes(prod.id) && (
                                   <div className="flex items-center gap-1">
@@ -1079,6 +1178,14 @@ export default function PromocoesPage() {
           </div>
         </div>
       )}
+      <CartProvider>
+        <ProductModal
+          product={previewProduct}
+          isOpen={previewOpen}
+          onClose={() => setPreviewOpen(false)}
+          products={products}
+        />
+      </CartProvider>
       {isModalOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
           <div
